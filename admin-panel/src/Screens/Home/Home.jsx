@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import "./Home.css";
 import { AttachMoney, DirectionsCar, People } from "@mui/icons-material"; // Importing Material UI icons
 import ChartsOverviewDemo from "../../Components/Charts/BarChart/BarChart";
+import { UserContext } from "../../context/UserContext";
 
 function Home() {
+  const { user } = useContext(UserContext);
   const [stats, setStats] = useState([
     {
       title: "Total Sales",
@@ -25,6 +27,7 @@ function Home() {
   return (
     <div>
       <div className="container">
+        <h1>Hi, {user?.username}</h1>
         <h1 style={{ fontSize: "25px", fontWeight: "bold" }}>Dashboard</h1>
         <div className="row">
           {stats.map((stat, index) => (

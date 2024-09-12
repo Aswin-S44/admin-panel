@@ -35,6 +35,18 @@ export const updateAdminUser = async (id, data) => {
   }
 };
 
+export const addAdminUser = async (data) => {
+  try {
+    let res = await axios.post(`${BACKEND_URL}/add-admin`, data);
+    if (res && res.status === 200) {
+      return res.data.data;
+    }
+  } catch (error) {
+    console.error("Error in updating admin user:", error);
+    return false;
+  }
+};
+
 export const deleteAdminUser = async (id, data) => {
   try {
     let res = await axios.post(`${BACKEND_URL}/delete-admin-user/${id}`);

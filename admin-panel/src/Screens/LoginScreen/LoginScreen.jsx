@@ -44,7 +44,7 @@ function LoginScreen() {
 
   const validateSecurityCode = async (e) => {
     e.preventDefault();
-    if (securityCode === validCode) {
+    if (securityCode === user?.securityCode) {
       setError(false);
       setMessage("");
       localStorage.setItem("user_info", JSON.stringify(user));

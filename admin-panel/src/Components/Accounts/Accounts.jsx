@@ -2,10 +2,12 @@ import React, { useContext, useEffect, useState } from "react";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import {
   deleteAdminUser,
   getAdminUsers,
   updateAdminUser,
+  addAdminUser, // You need to implement this function in your api service
 } from "../../services/api";
 import Spinner from "../Spinner/Spinner";
 import { UserContext } from "../../context/UserContext";
@@ -33,9 +35,10 @@ const style = {
 function Accounts() {
   const [adminUsers, setAdminUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { user } = useContext(UserContext);
   const [openView, setOpenView] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
+  const [openAdd, setOpenAdd] = useState(false); // Add state for Add User modal
+  const { user } = useContext(UserContext);
   const [selectedAdmin, setSelectedAdmin] = useState(null);
   const [editData, setEditData] = useState({
     username: "",
@@ -43,6 +46,14 @@ function Accounts() {
     role: "",
     enable2fa: "",
     status: "",
+  });
+  const [newUserData, setNewUserData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    role: "",
+    enable2fa: "No",
+    securityCode: "",
   });
 
   useEffect(() => {
@@ -72,9 +83,14 @@ function Accounts() {
     setOpenEdit(true);
   };
 
+  const handleOpenAdd = () => {
+    setOpenAdd(true);
+  };
+
   const handleClose = () => {
     setOpenView(false);
     setOpenEdit(false);
+    setOpenAdd(false);
   };
 
   const handleEditChange = (e) => {
@@ -143,10 +159,42 @@ function Accounts() {
       });
   };
 
+  const handleNewUserChange = (e) => {
+    setNewUserData({ ...newUserData, [e.target.name]: e.target.value });
+  };
+
+  const handleAutoGenerateCode = () => {
+    const randomCode = Math.random().toString(36).substring(2, 10);
+    setNewUserData({ ...newUserData, securityCode: randomCode });
+  };
+
+  const handleAddSubmit = async (e) => {
+    e.preventDefault();
+    const addUserData = {
+      username: newUserData.username,
+      email: newUserData.email,
+      password: newUserData.password,
+      role: newUserData.role,
+      enable2fa: newUserData.enable2fa === "Yes",
+      securityCode: newUserData.securityCode,
+    };
+
+    const res = await addAdminUser(addUserData);
+    if (res) {
+      setAdminUsers((prevAdminUsers) => [...prevAdminUsers, res]);
+      setOpenAdd(false);
+    }
+  };
+
   return (
     <div>
       <div className="container">
-        <h2>All Accounts</h2>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <h2>All Accounts</h2>
+          <IconButton onClick={handleOpenAdd}>
+            <AddCircleOutlineIcon />
+          </IconButton>
+        </div>
         <table className="table mt-4">
           <thead>
             <tr>
@@ -154,7 +202,7 @@ function Accounts() {
               <th scope="col">Username</th>
               <th scope="col">Email</th>
               <th scope="col">Role</th>
-              <th scope="col">2fa Enabled</th>
+              <th scope="col">2FA Enabled</th>
               <th scope="col">Status</th>
               <th scope="col">Action</th>
             </tr>
@@ -215,9 +263,10 @@ function Accounts() {
         </table>
       </div>
 
+      {/* View Modal */}
       <Modal open={openView} onClose={handleClose}>
         <Box sx={style}>
-          <h3>Admin Details</h3>
+          <h2>View User</h2>
           {selectedAdmin && (
             <>
               <p>
@@ -230,8 +279,8 @@ function Accounts() {
                 <strong>Role:</strong> {selectedAdmin.role}
               </p>
               <p>
-                <strong>2FA:</strong>{" "}
-                {selectedAdmin.enable2fa ? "Enabled" : "Not Enabled"}
+                <strong>2FA Enabled:</strong>{" "}
+                {selectedAdmin.enable2fa ? "Yes" : "No"}
               </p>
               <p>
                 <strong>Status:</strong>{" "}
@@ -239,71 +288,142 @@ function Accounts() {
               </p>
             </>
           )}
-          <Button onClick={handleClose} variant="contained" color="primary">
-            Close
-          </Button>
+          <Button onClick={handleClose}>Close</Button>
         </Box>
       </Modal>
 
+      {/* Edit Modal */}
       <Modal open={openEdit} onClose={handleClose}>
         <Box sx={style}>
-          <h3>Edit Admin</h3>
+          <h2>Edit User</h2>
           <form onSubmit={handleEditSubmit}>
             <TextField
-              label="Username"
               name="username"
+              label="Username"
+              variant="outlined"
+              fullWidth
+              margin="normal"
               value={editData.username}
               onChange={handleEditChange}
-              fullWidth
-              margin="normal"
             />
             <TextField
-              label="Email"
               name="email"
+              label="Email"
+              variant="outlined"
+              fullWidth
+              margin="normal"
               value={editData.email}
               onChange={handleEditChange}
-              fullWidth
-              margin="normal"
             />
             <Select
-              label="Role"
               name="role"
-              value={editData.role}
-              onChange={handleEditChange}
+              label="Role"
               fullWidth
               margin="normal"
+              value={editData.role}
+              onChange={handleEditChange}
             >
               <MenuItem value="Admin">Admin</MenuItem>
               <MenuItem value="Super Admin">Super Admin</MenuItem>
-              <MenuItem value="Operator">Operator</MenuItem>
-              <MenuItem value="SEO">SEO</MenuItem>
             </Select>
-            <p>2FA Enabled</p>
             <Select
-              label="2FA Enabled"
               name="enable2fa"
-              value={editData.enable2fa}
-              onChange={handleEditChange}
+              label="2FA Enabled"
               fullWidth
               margin="normal"
+              value={editData.enable2fa}
+              onChange={handleEditChange}
             >
               <MenuItem value="Yes">Yes</MenuItem>
               <MenuItem value="No">No</MenuItem>
             </Select>
-            <p>Activated</p>
             <Select
-              label="Status"
               name="status"
-              value={editData.status}
-              onChange={handleEditChange}
+              label="Status"
               fullWidth
               margin="normal"
+              value={editData.status}
+              onChange={handleEditChange}
             >
               <MenuItem value="Activate">Activate</MenuItem>
               <MenuItem value="Deactivate">Deactivate</MenuItem>
             </Select>
-            <Button type="submit" variant="contained" color="primary" fullWidth>
-              Update
+            <Button type="submit" variant="contained">
+              Save
+            </Button>
+          </form>
+        </Box>
+      </Modal>
+
+      {/* Add Modal */}
+      <Modal open={openAdd} onClose={handleClose}>
+        <Box sx={style}>
+          <h2>Add User</h2>
+          <form onSubmit={handleAddSubmit}>
+            <TextField
+              name="username"
+              label="Username"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={newUserData.username}
+              onChange={handleNewUserChange}
+            />
+            <TextField
+              name="email"
+              label="Email"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={newUserData.email}
+              onChange={handleNewUserChange}
+            />
+            <TextField
+              name="password"
+              label="Password"
+              type="password"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={newUserData.password}
+              onChange={handleNewUserChange}
+            />
+            <Select
+              name="role"
+              label="Role"
+              fullWidth
+              margin="normal"
+              value={newUserData.role}
+              onChange={handleNewUserChange}
+            >
+              <MenuItem value="Admin">Admin</MenuItem>
+              <MenuItem value="Super Admin">Super Admin</MenuItem>
+            </Select>
+            <Select
+              name="enable2fa"
+              label="2FA Enabled"
+              fullWidth
+              margin="normal"
+              value={newUserData.enable2fa}
+              onChange={handleNewUserChange}
+            >
+              <MenuItem value="Yes">Yes</MenuItem>
+              <MenuItem value="No">No</MenuItem>
+            </Select>
+            <TextField
+              name="securityCode"
+              label="Security Code"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={newUserData.securityCode}
+              onChange={handleNewUserChange}
+            />
+            <Button onClick={handleAutoGenerateCode}>
+              Auto-generate Security Code
+            </Button>
+            <Button type="submit" variant="contained">
+              Add User
             </Button>
           </form>
         </Box>
