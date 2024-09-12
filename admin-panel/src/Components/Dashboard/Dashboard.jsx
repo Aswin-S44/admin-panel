@@ -9,6 +9,8 @@ import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import Home from "../../Screens/Home/Home";
 import SettingsScreen from "../../Screens/SettingsScreen/SettingsScreen";
 import { UserContext } from "../../context/UserContext";
+import Notifications from "../../Screens/Notifications/Notifications";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 
 function DashboardHome() {
   const { user } = useContext(UserContext);
@@ -58,6 +60,8 @@ function DashboardHome() {
             <ViewUser setIsAddingUser={setIsAddingUser} />;
           </view>
         );
+      case "Notifications":
+        return <Notifications />;
       case "Settings":
         return <SettingsScreen />;
       default:
@@ -99,6 +103,15 @@ function DashboardHome() {
             className={selectedMenu === "Users" ? "active" : ""}
           >
             <People /> {!isSidebarOpen && <span>Users</span>}
+          </li>
+          <li
+            onClick={() => {
+              setSelectedMenu("Notifications");
+              setIsAddingUser(false);
+            }}
+            className={selectedMenu === "Notifications" ? "active" : ""}
+          >
+            <NotificationsIcon /> {!isSidebarOpen && <span>Notifications</span>}
           </li>
           {user && user?.role == "Super Admin" && (
             <>
