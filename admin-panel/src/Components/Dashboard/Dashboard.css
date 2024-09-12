@@ -25,7 +25,7 @@
   
   .sidebar-header {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     padding: 10px;
   }
   
@@ -76,5 +76,16 @@
     flex-grow: 1;
     padding: 20px;
     background-color: #f0f0f0;
+  }
+  
+  .badge {
+    background-color: red;
+    color: white;
+    padding: 3px 7px;
+    border-radius: 50%;
+    position: absolute;
+    top: -5px;
+    right: -15px;
+    font-size: 12px;
   }
   

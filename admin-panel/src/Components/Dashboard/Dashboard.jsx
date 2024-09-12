@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Dashboard, Settings, People } from "@mui/icons-material";
 import "./Dashboard.css";
 import AddUserForm from "../AddUserForm/AddUserForm";
@@ -11,6 +11,17 @@ import SettingsScreen from "../../Screens/SettingsScreen/SettingsScreen";
 import { UserContext } from "../../context/UserContext";
 import Notifications from "../../Screens/Notifications/Notifications";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import Enquiries from "../../Screens/Enquiries/Enquiries";
+import MessageIcon from "@mui/icons-material/Message";
+import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
+import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
+import LogoutIcon from "@mui/icons-material/Logout";
+import Swal from "sweetalert2";
+
+import io from "socket.io-client";
+
+const SERVER_URL = "http://localhost:5000";
+const socket = io(SERVER_URL);
 
 function DashboardHome() {
   const { user } = useContext(UserContext);
@@ -18,11 +29,21 @@ function DashboardHome() {
   const [selectedMenu, setSelectedMenu] = useState("Dashboard");
   const [isAddingUser, setIsAddingUser] = useState(false);
   const [isAddingCar, setIsAddingCar] = useState(false);
+  const [newNotificationCount, setNewNotificationCount] = useState(0);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+  useEffect(() => {
+    // Listen for new enquiry events
+    socket.on("new-enquiry", () => {
+      setNewNotificationCount((prevCount) => prevCount + 1); // Increment notification count
+    });
 
+    return () => {
+      socket.off("new-enquiry"); // Clean up the socket listener
+    };
+  }, []);
   const renderContent = () => {
     if (isAddingUser) {
       return <AddUserForm onBack={() => setIsAddingUser(false)} />;
@@ -60,6 +81,12 @@ function DashboardHome() {
             <ViewUser setIsAddingUser={setIsAddingUser} />;
           </view>
         );
+      case "Enquiries":
+        return (
+          <view>
+            <Enquiries />
+          </view>
+        );
       case "Notifications":
         return <Notifications />;
       case "Settings":
@@ -73,8 +100,15 @@ function DashboardHome() {
     <div className="app-container">
       <div className={isSidebarOpen ? "sidebar open" : "sidebar"}>
         <div className="sidebar-header">
+          {!isSidebarOpen && (
+            <h2 style={{ fontWeight: "bold" }}>Admin Panel</h2>
+          )}
           <button className="toggle-btn" onClick={toggleSidebar}>
-            {isSidebarOpen ? ">" : "<"}
+            {isSidebarOpen ? (
+              <KeyboardDoubleArrowRightIcon />
+            ) : (
+              <KeyboardDoubleArrowLeftIcon />
+            )}
           </button>
         </div>
         <ul className="menu-items">
@@ -106,6 +140,38 @@ function DashboardHome() {
           </li>
           <li
             onClick={() => {
+              setSelectedMenu("Enquiries");
+              setIsAddingUser(false);
+            }}
+            className={selectedMenu === "Enquiries" ? "active" : ""}
+          >
+            <MessageIcon /> {/* {newNotificationCount > 0 && ( */}
+            <span className="badge" style={{ color: "white" }}>
+              {newNotificationCount}
+            </span>
+            {/* )} */}
+            {!isSidebarOpen && (
+              <span>
+                {newNotificationCount > 0 && (
+                  <span
+                    className=""
+                    style={{
+                      width: "4px",
+                      height: "4px",
+                      backgroundColor: "red",
+                      padding: "5px",
+                      borderRadius: "50%",
+                    }}
+                  >
+                    {newNotificationCount}
+                  </span>
+                )}{" "}
+                Enquiries
+              </span>
+            )}
+          </li>
+          <li
+            onClick={() => {
               setSelectedMenu("Notifications");
               setIsAddingUser(false);
             }}
@@ -126,6 +192,26 @@ function DashboardHome() {
               </li>
             </>
           )}
+          <li
+            onClick={() => {
+              Swal.fire({
+                title: "Are you sure?",
+                text: "Do you want to Logout?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  localStorage.removeItem("user_info");
+                  window.location.href = "/";
+                }
+              });
+            }}
+          >
+            <LogoutIcon /> {!isSidebarOpen && <span>Logout</span>}
+          </li>
         </ul>
       </div>
 
