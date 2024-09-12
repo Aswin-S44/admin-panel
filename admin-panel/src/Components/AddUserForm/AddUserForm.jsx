@@ -22,10 +22,7 @@ function AddUserForm({ onBack }) {
       about,
     };
     console.log("User added : ", data);
-    let res = await axios.post(
-      `http://localhost:5000/api/v1/admin/add-dealer`,
-      data
-    );
+    let res = await axios.post(`${BACKEND_URL}/add-dealer`, data);
     if (res && res.status == 200) {
       Swal.fire({
         title: "Good job!",

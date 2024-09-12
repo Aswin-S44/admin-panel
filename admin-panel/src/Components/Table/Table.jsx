@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { Menu, MenuItem } from "@mui/material"; // For Dropdown
+import { Menu, MenuItem } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Spinner from "../Spinner/Spinner";
+import { UserContext } from "../../context/UserContext";
 
 function Table({ onAction }) {
   const [dealers, setDealers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedDealer, setSelectedDealer] = useState(null);
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
     const fetchDealers = async () => {
@@ -59,24 +63,40 @@ function Table({ onAction }) {
         </thead>
         <tbody>
           {loading ? (
-            <>Loading....</>
+            <div className="text-center">
+              <Spinner />
+            </div>
           ) : (
             dealers.map((dealer, index) => (
               <tr key={dealer._id}>
                 <th scope="row">{index + 1}</th>
-                <td>{dealer.name}</td>
+                <td style={{ fontSize: "18px", fontWeight: "bold" }}>
+                  {dealer.name}
+                </td>
                 <td>{dealer.brand}</td>
                 <td>{dealer.location}</td>
                 <td>{dealer.phone}</td>
                 <td>{dealer.email}</td>
-                <td>{dealer.blocked ? "Blocked" : "Active"}</td>
+                <td
+                  style={{
+                    color: dealer.blocked ? "red" : "#05c705",
+                    fontWeight: "500",
+                  }}
+                >
+                  {dealer.blocked ? "Blocked" : "Active"}
+                </td>
+
                 <td>
-                  {/* Dropdown Menu for Actions */}
                   <button
                     onClick={(event) => handleMenuClick(event, dealer)}
-                    className="btn btn-secondary dropdown-toggle"
+                    className=" dropdown-toggle"
+                    style={{
+                      border: "none",
+                      outline: "none",
+                      backgroundColor: "#fff",
+                    }}
                   >
-                    Actions
+                    <ExpandMoreIcon />
                   </button>
                   <Menu
                     anchorEl={anchorEl}
@@ -86,12 +106,16 @@ function Table({ onAction }) {
                     <MenuItem onClick={() => handleAction("view")}>
                       View
                     </MenuItem>
-                    <MenuItem onClick={() => handleAction("edit")}>
-                      Edit
-                    </MenuItem>
-                    <MenuItem onClick={() => handleAction("delete")}>
-                      Delete
-                    </MenuItem>
+                    {user && user.role == "Super Admin" && (
+                      <>
+                        <MenuItem onClick={() => handleAction("edit")}>
+                          Edit
+                        </MenuItem>
+                        <MenuItem onClick={() => handleAction("delete")}>
+                          Delete
+                        </MenuItem>
+                      </>
+                    )}
                   </Menu>
                 </td>
               </tr>

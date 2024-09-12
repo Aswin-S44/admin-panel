@@ -1,13 +1,21 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Dashboard, Settings, People } from "@mui/icons-material";
 import "./Dashboard.css";
 import AddUserForm from "../AddUserForm/AddUserForm";
 import ViewUser from "../../Screens/Users/ViewUser/ViewUser";
+import Cars from "../Cars/Cars";
+import AddCar from "../AddCar/AddCar";
+import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
+import Home from "../../Screens/Home/Home";
+import SettingsScreen from "../../Screens/SettingsScreen/SettingsScreen";
+import { UserContext } from "../../context/UserContext";
 
 function DashboardHome() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { user } = useContext(UserContext);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState("Dashboard");
   const [isAddingUser, setIsAddingUser] = useState(false);
+  const [isAddingCar, setIsAddingCar] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -18,9 +26,23 @@ function DashboardHome() {
       return <AddUserForm onBack={() => setIsAddingUser(false)} />;
     }
 
+    if (isAddingCar) {
+      return <AddCar onBack={() => setIsAddingCar(false)} />;
+    }
+
     switch (selectedMenu) {
       case "Dashboard":
-        return <h1>Dashboard Content</h1>;
+        return (
+          <>
+            <Home />
+          </>
+        );
+      case "Cars":
+        return (
+          <view>
+            <Cars setIsAddingCar={setIsAddingCar} />
+          </view>
+        );
       case "Users":
         return (
           <view
@@ -37,7 +59,7 @@ function DashboardHome() {
           </view>
         );
       case "Settings":
-        return <h1>Settings Page</h1>;
+        return <SettingsScreen />;
       default:
         return <h1>Welcome</h1>;
     }
@@ -55,7 +77,7 @@ function DashboardHome() {
           <li
             onClick={() => {
               setSelectedMenu("Dashboard");
-              setIsAddingUser(false); // Ensure to reset add form
+              setIsAddingUser(false);
             }}
             className={selectedMenu === "Dashboard" ? "active" : ""}
           >
@@ -63,22 +85,34 @@ function DashboardHome() {
           </li>
           <li
             onClick={() => {
+              setSelectedMenu("Cars");
+            }}
+            className={selectedMenu === "Cars" ? "active" : ""}
+          >
+            <DirectionsCarIcon /> {!isSidebarOpen && <span>Cars</span>}
+          </li>
+          <li
+            onClick={() => {
               setSelectedMenu("Users");
-              setIsAddingUser(false); // Ensure to reset add form
+              setIsAddingUser(false);
             }}
             className={selectedMenu === "Users" ? "active" : ""}
           >
             <People /> {!isSidebarOpen && <span>Users</span>}
           </li>
-          <li
-            onClick={() => {
-              setSelectedMenu("Settings");
-              setIsAddingUser(false); // Ensure to reset add form
-            }}
-            className={selectedMenu === "Settings" ? "active" : ""}
-          >
-            <Settings /> {!isSidebarOpen && <span>Settings</span>}
-          </li>
+          {user && user?.role == "Super Admin" && (
+            <>
+              <li
+                onClick={() => {
+                  setSelectedMenu("Settings");
+                  setIsAddingUser(false);
+                }}
+                className={selectedMenu === "Settings" ? "active" : ""}
+              >
+                <Settings /> {!isSidebarOpen && <span>Settings</span>}
+              </li>
+            </>
+          )}
         </ul>
       </div>
 

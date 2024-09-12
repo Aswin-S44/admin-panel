@@ -1,0 +1,89 @@
+/* Container styling for a clean, flat UI */
+.dealer-details-container {
+    background-color: #ffffff;
+    padding: 30px;
+    max-width: 600px;
+    margin: 60px auto;
+    border-left: 4px solid #007bff;
+    border-radius: 0;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+  }
+  
+  /* Title styling */
+  h1 {
+    font-size: 28px;
+    color: #007bff;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    letter-spacing: 1.5px;
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 10px;
+  }
+  
+  /* Information section styling */
+  .dealer-details-info p {
+    font-size: 18px;
+    margin-bottom: 15px;
+    line-height: 1.6;
+  }
+  
+  .dealer-details-info span {
+    color: #555;
+    font-weight: bold;
+  }
+  
+  /* Button Styling */
+  .btn {
+    display: inline-block;
+    padding: 12px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .btn-secondary {
+    background-color: #6c757d;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #565e64;
+  }
+  
+  /* Layout improvements */
+  .dealer-details-info {
+    margin-bottom: 20px;
+  }
+  
+  .dealer-details-info p span {
+    display: inline-block;
+    width: 120px;
+    font-weight: normal;
+    color: #666;
+  }
+  
+  .dealer-details-container p {
+    margin: 0;
+    padding: 10px 0;
+    border-bottom: 1px solid #f1f1f1;
+  }
+  
+  .dealer-details-container p:last-child {
+    border: none;
+  }
+  
+  @media (max-width: 768px) {
+    .dealer-details-container {
+      padding: 20px;
+    }
+  }
+  
