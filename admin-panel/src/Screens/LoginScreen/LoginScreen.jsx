@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./LoginScreen.css";
-import axios from "axios";
-import { BACKEND_URL } from "../../config/constant";
+import { loginUser } from "../../services/api";
 
 function LoginScreen() {
   const [username, setUsername] = useState("");
@@ -14,16 +13,11 @@ function LoginScreen() {
   const [validationSuccess, setValidationSuccess] = useState(false);
   const [user, setUser] = useState(null);
 
-  let validCode = "1234";
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      let res = await axios.post(`${BACKEND_URL}/login`, {
-        username,
-        password,
-      });
+      let res = await loginUser(username, password);
       if (res && res.data && res.data.status == 200) {
         setLoading(false);
         setError(false);
@@ -56,46 +50,23 @@ function LoginScreen() {
   };
 
   return (
-    <div
-      className=""
-      style={{ backgroundColor: "whitesmoke", width: "100%", height: "100vh" }}
-    >
+    <div className="loginContainer">
       <div className="container">
         <div className="row">
           <div className="col-md-4"></div>
           <div className="col-md-4">
-            <div
-              className="card p-3"
-              style={{
-                alignItems: "center",
-                display: "flex",
-                justifyContent: "center",
-                top: "60%",
-              }}
-            >
-              <form className="login-form" onSubmit={handleSubmit}>
-                <h2
-                  className="login-title text-center"
-                  style={{ fontWeight: "400" }}
-                >
-                  Login
-                </h2>
+            <div className="loginBox p-4">
+              <form onSubmit={handleSubmit}>
+                <h2 className="login-title text-center font-500">Login</h2>
 
                 {error && (
-                  <div
-                    style={{
-                      backgroundColor: "#ffb7b7",
-                      padding: "20px",
-                      marginBottom: "10px",
-                      borderRadius: "10px",
-                    }}
-                  >
-                    <p style={{ color: "red" }}>{message}</p>
+                  <div className="error">
+                    <p className="error-text">{message}</p>
                   </div>
                 )}
 
                 <div className="form-group mt-3">
-                  <label htmlFor="email" style={{ fontWeight: "400" }}>
+                  <label htmlFor="email" className="font-400">
                     Username
                   </label>
                   <input
@@ -105,12 +76,12 @@ function LoginScreen() {
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="Enter your username"
                     required
-                    className="form-control"
+                    className="form-control w-100"
                   />
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="password" style={{ fontWeight: "400" }}>
+                  <label htmlFor="password" className="font-400">
                     Password
                   </label>
                   <input

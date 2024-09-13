@@ -1,6 +1,20 @@
 import axios from "axios";
 import { BACKEND_URL } from "../config/constant";
 
+export const loginUser = async (username, password) => {
+  try {
+    let res = await axios.post(`${BACKEND_URL}/login`, {
+      username,
+      password,
+    });
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    return error;
+  }
+};
+
 export const getSettings = async () => {
   try {
     let res = await axios.get(`${BACKEND_URL}/get-site-settings`);
