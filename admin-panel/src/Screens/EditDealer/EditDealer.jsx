@@ -7,11 +7,11 @@ function EditDealer({ dealer, onBack }) {
     e.preventDefault();
     // Handle form submission, e.g., send data to the server
   };
-
+ 
   return (
     <div>
       <button className="btn btn-secondary" onClick={onBack}>
-        Back to Dealers List
+        Back
       </button>
       <h1>Edit Dealer</h1>
       <form onSubmit={handleSubmit}>

@@ -48,81 +48,97 @@ function Table({ onAction }) {
 
   return (
     <div style={{ top: "60px", position: "relative" }}>
-      <table className="table table-striped mt-0">
-        <thead>
-          <tr>
-            <th scope="col">No</th>
-            <th scope="col">Name</th>
-            <th scope="col">Shop name</th>
-            <th scope="col">Location</th>
-            <th scope="col">Phone</th>
-            <th scope="col">Email</th>
-            <th scope="col">Blocked</th>
-            <th scope="col">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
-            <div className="text-center">
-              <Spinner />
-            </div>
-          ) : (
-            dealers.map((dealer, index) => (
-              <tr key={dealer._id}>
-                <th scope="row">{index + 1}</th>
-                <td style={{ fontSize: "18px", fontWeight: "bold" }}>
-                  {dealer.name}
-                </td>
-                <td>{dealer.brand}</td>
-                <td>{dealer.location}</td>
-                <td>{dealer.phone}</td>
-                <td>{dealer.email}</td>
-                <td
-                  style={{
-                    color: dealer.blocked ? "red" : "#05c705",
-                    fontWeight: "500",
-                  }}
-                >
-                  {dealer.blocked ? "Blocked" : "Active"}
-                </td>
-
-                <td>
-                  <button
-                    onClick={(event) => handleMenuClick(event, dealer)}
-                    className=" dropdown-toggle"
-                    style={{
-                      border: "none",
-                      outline: "none",
-                      backgroundColor: "#fff",
-                    }}
-                  >
-                    <ExpandMoreIcon />
-                  </button>
-                  <Menu
-                    anchorEl={anchorEl}
-                    open={Boolean(anchorEl)}
-                    onClose={handleMenuClose}
-                  >
-                    <MenuItem onClick={() => handleAction("view")}>
-                      View
-                    </MenuItem>
-                    {user && user.role == "Super Admin" && (
-                      <>
-                        <MenuItem onClick={() => handleAction("edit")}>
-                          Edit
-                        </MenuItem>
-                        <MenuItem onClick={() => handleAction("delete")}>
-                          Delete
-                        </MenuItem>
-                      </>
-                    )}
-                  </Menu>
-                </td>
+      {loading ? (
+        <>Loading....</>
+      ) : dealers.length == 0 ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          No Dealers found
+        </div>
+      ) : (
+        <>
+          <table className="table table-striped mt-0">
+            <thead>
+              <tr>
+                <th scope="col">No</th>
+                <th scope="col">Name</th>
+                <th scope="col">Shop name</th>
+                <th scope="col">Location</th>
+                <th scope="col">Phone</th>
+                <th scope="col">Email</th>
+                <th scope="col">Blocked</th>
+                <th scope="col">Action</th>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {loading ? (
+                <div className="text-center">
+                  <Spinner />
+                </div>
+              ) : (
+                dealers.map((dealer, index) => (
+                  <tr key={dealer._id}>
+                    <th scope="row">{index + 1}</th>
+                    <td style={{ fontSize: "18px", fontWeight: "bold" }}>
+                      {dealer.name}
+                    </td>
+                    <td>{dealer.brand}</td>
+                    <td>{dealer.location}</td>
+                    <td>{dealer.phone}</td>
+                    <td>{dealer.email}</td>
+                    <td
+                      style={{
+                        color: dealer.blocked ? "red" : "#05c705",
+                        fontWeight: "500",
+                      }}
+                    >
+                      {dealer.blocked ? "Blocked" : "Active"}
+                    </td>
+
+                    <td>
+                      <button
+                        onClick={(event) => handleMenuClick(event, dealer)}
+                        className=" dropdown-toggle"
+                        style={{
+                          border: "none",
+                          outline: "none",
+                          backgroundColor: "#fff",
+                        }}
+                      >
+                        <ExpandMoreIcon />
+                      </button>
+                      <Menu
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={handleMenuClose}
+                      >
+                        <MenuItem onClick={() => handleAction("view")}>
+                          View
+                        </MenuItem>
+                        {user && user.role == "Super Admin" && (
+                          <>
+                            <MenuItem onClick={() => handleAction("edit")}>
+                              Edit
+                            </MenuItem>
+                            <MenuItem onClick={() => handleAction("delete")}>
+                              Delete
+                            </MenuItem>
+                          </>
+                        )}
+                      </Menu>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </>
+      )}
     </div>
   );
 }

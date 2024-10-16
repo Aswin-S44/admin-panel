@@ -1,0 +1,74 @@
+.status-box{
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+.welcome-title{
+    font-size: 40px;
+    font-weight: 500;
+    color: #096dd7;
+}
+
+.stat-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .stat-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    color: white;
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+  }
+  
+  .stat-card h2 {
+    font-size: 36px;
+    margin: 10px 0;
+  }
+  
+  .stat-card h5 {
+    font-size: 16px;
+  }
+  
+  .total-earnings {
+    background-color: #80deea; 
+    color: #004d40;
+  }
+  
+  .total-sales {
+    background-color: #ffcccb; 
+    color: #b71c1c;
+  }
+  
+  .total-cars {
+    background-color: #9fa8da; 
+    color: #1a237e; 
+  }
+  
+  .total-dealers {
+    background-color: #ffe0b2; 
+    color: #e65100;
+  }
+  .graph-title{
+    font-size: 25px;
+    font-weight: 500;
+    color: rgb(5, 5, 29);
+  }
+  
+  .stat-icon {
+    margin-bottom: 10px;
+  }
+  
+  @media (max-width: 768px) {
+    .stat-container {
+      flex-direction: column;
+    }
+  }
+  

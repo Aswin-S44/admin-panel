@@ -17,6 +17,7 @@
     color: #fff;
     transition: width 0.3s ease;
     overflow: hidden;
+    height: 100vh;
   }
   
   .sidebar.open {
@@ -76,6 +77,9 @@
     flex-grow: 1;
     padding: 20px;
     background-color: #f0f0f0;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: scroll;
   }
   
   .badge {

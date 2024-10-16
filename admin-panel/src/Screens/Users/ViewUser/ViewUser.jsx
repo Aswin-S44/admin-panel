@@ -12,7 +12,7 @@ function ViewUser({ setIsAddingUser }) {
   const handleAction = (action, dealer) => {
     setAction(action);
     setSelectedDealer(dealer);
-  };
+  }; 
 
   const handleBack = () => {
     setAction(null);

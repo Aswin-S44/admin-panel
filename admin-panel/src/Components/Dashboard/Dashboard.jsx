@@ -17,8 +17,10 @@ import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrow
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Swal from "sweetalert2";
+import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 
 import io from "socket.io-client";
+import SellerEnquiries from "../../Screens/SellerEnquiries/SellerEnquiries";
 
 const SERVER_URL = "http://localhost:5000";
 const socket = io(SERVER_URL);
@@ -35,13 +37,12 @@ function DashboardHome() {
     setIsSidebarOpen(!isSidebarOpen);
   };
   useEffect(() => {
-    // Listen for new enquiry events
     socket.on("new-enquiry", () => {
-      setNewNotificationCount((prevCount) => prevCount + 1); // Increment notification count
+      setNewNotificationCount((prevCount) => prevCount + 1);
     });
 
     return () => {
-      socket.off("new-enquiry"); // Clean up the socket listener
+      socket.off("new-enquiry");
     };
   }, []);
   const renderContent = () => {
@@ -87,6 +88,8 @@ function DashboardHome() {
             <Enquiries />
           </view>
         );
+      case "seller_enquiry":
+        return <SellerEnquiries />;
       case "Notifications":
         return <Notifications />;
       case "Settings":
@@ -136,7 +139,7 @@ function DashboardHome() {
             }}
             className={selectedMenu === "Users" ? "active" : ""}
           >
-            <People /> {!isSidebarOpen && <span>Users</span>}
+            <People /> {!isSidebarOpen && <span>Dealers</span>}
           </li>
           <li
             onClick={() => {
@@ -146,9 +149,6 @@ function DashboardHome() {
             className={selectedMenu === "Enquiries" ? "active" : ""}
           >
             <MessageIcon /> {/* {newNotificationCount > 0 && ( */}
-            <span className="badge" style={{ color: "white" }}>
-              {newNotificationCount}
-            </span>
             {/* )} */}
             {!isSidebarOpen && (
               <span>
@@ -169,6 +169,15 @@ function DashboardHome() {
                 Enquiries
               </span>
             )}
+          </li>
+          <li
+            onClick={() => {
+              setSelectedMenu("seller_enquiry");
+            }}
+            className={selectedMenu === "seller_enquiry" ? "active" : ""}
+          >
+            <ManageSearchIcon />{" "}
+            {!isSidebarOpen && <span>Seller Enquiries</span>}
           </li>
           <li
             onClick={() => {

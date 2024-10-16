@@ -5,6 +5,10 @@ import Spinner from "../Spinner/Spinner";
 import { Menu, MenuItem } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { UserContext } from "../../context/UserContext";
+import { deleteCar } from "../../services/api";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
 function CarTable({ onAction }) {
   const [cars, setCars] = useState([]);
@@ -20,7 +24,6 @@ function CarTable({ onAction }) {
   useEffect(() => {
     const fetchCars = async () => {
       setLoading(true);
-
       try {
         const res = await axios.get(`${BACKEND_URL}/get-cars`, {
           params: {
@@ -29,7 +32,6 @@ function CarTable({ onAction }) {
             limit,
           },
         });
-
         if (res && res.status === 200) {
           setCars(res.data.data);
           setTotalCars(res.data.totalCars);
@@ -40,7 +42,6 @@ function CarTable({ onAction }) {
         setLoading(false);
       }
     };
-
     fetchCars();
   }, [searchQuery, currentPage, limit]);
 
@@ -62,6 +63,7 @@ function CarTable({ onAction }) {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+    setSelectedCar(null);
   };
 
   const handleAction = (action) => {
@@ -71,9 +73,19 @@ function CarTable({ onAction }) {
     }
   };
 
+  const handleDeleteCar = async (car) => {
+    try {
+      await deleteCar(car._id);
+      toast.success("Car deleted successfully!");
+      setCars(cars.filter((item) => item._id !== car._id));
+    } catch (error) {
+      toast.error("Failed to delete car.");
+    }
+  };
+
   return (
     <div>
-      {/* Search Bar */}
+      <ToastContainer />
       <div className="mb-3">
         <input
           type="text"
@@ -85,9 +97,7 @@ function CarTable({ onAction }) {
       </div>
 
       {loading ? (
-        <div>
-          <Spinner />
-        </div>
+        <Spinner />
       ) : (
         <>
           <table className="table mt-4">
@@ -108,7 +118,7 @@ function CarTable({ onAction }) {
             <tbody>
               {cars.length === 0 && !loading ? (
                 <tr>
-                  <td colSpan="9">
+                  <td colSpan="10">
                     <div style={{ textAlign: "center" }}>
                       <h4>No cars available</h4>
                     </div>
@@ -132,9 +142,15 @@ function CarTable({ onAction }) {
                     <td>{car?.car_name}</td>
                     <td>{car?.brand}</td>
                     <td>{car?.owner}</td>
-                    <td>{car?.year}</td>
+                    <td>{car.year ? car.year : car.model ? car.model : "_"}</td>
                     <td>{car?.price}</td>
-                    <td>{car.location ? car.location : "_"}</td>
+                    <td>
+                      {car.location
+                        ? car.location
+                        : car.place
+                        ? car.place
+                        : "_"}
+                    </td>
                     <td>
                       {car.sold ? (
                         <div
@@ -178,12 +194,14 @@ function CarTable({ onAction }) {
                         <MenuItem onClick={() => handleAction("view")}>
                           View
                         </MenuItem>
-                        {user && user.role == "Super Admin" && (
+                        {user && user.role === "Super Admin" && (
                           <>
                             <MenuItem onClick={() => handleAction("edit")}>
                               Edit
                             </MenuItem>
-                            <MenuItem onClick={() => handleAction("delete")}>
+                            <MenuItem
+                              onClick={() => handleDeleteCar(selectedCar)}
+                            >
                               Delete
                             </MenuItem>
                           </>

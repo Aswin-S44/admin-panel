@@ -388,28 +388,34 @@ function Accounts() {
               value={newUserData.password}
               onChange={handleNewUserChange}
             />
-            <Select
-              name="role"
-              label="Role"
-              fullWidth
-              margin="normal"
-              value={newUserData.role}
-              onChange={handleNewUserChange}
-            >
-              <MenuItem value="Admin">Admin</MenuItem>
-              <MenuItem value="Super Admin">Super Admin</MenuItem>
-            </Select>
-            <Select
-              name="enable2fa"
-              label="2FA Enabled"
-              fullWidth
-              margin="normal"
-              value={newUserData.enable2fa}
-              onChange={handleNewUserChange}
-            >
-              <MenuItem value="Yes">Yes</MenuItem>
-              <MenuItem value="No">No</MenuItem>
-            </Select>
+            <div>
+              <p style={{ top: "10px", position: "relative" }}>Role</p>
+              <Select
+                name="role"
+                label="Role"
+                fullWidth
+                margin="normal"
+                value={newUserData.role}
+                onChange={handleNewUserChange}
+              >
+                <MenuItem value="Admin">Admin</MenuItem>
+                <MenuItem value="Super Admin">Super Admin</MenuItem>
+              </Select>
+            </div>
+            <div>
+              <p style={{ top: "10px", position: "relative" }}>Enable 2FA</p>
+              <Select
+                name="enable2fa"
+                label="2FA Enabled"
+                fullWidth
+                margin="normal"
+                value={newUserData.enable2fa}
+                onChange={handleNewUserChange}
+              >
+                <MenuItem value="Yes">Yes</MenuItem>
+                <MenuItem value="No">No</MenuItem>
+              </Select>
+            </div>
             <TextField
               name="securityCode"
               label="Security Code"

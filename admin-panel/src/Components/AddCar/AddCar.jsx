@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./AddCar.css";
 import { uploadImageToCloudinary } from "../../utils/utils";
 import axios from "axios";
@@ -11,7 +11,6 @@ function AddCar({ onBack }) {
   const [car_name, setCarName] = useState("");
   const [brand, setBrand] = useState("");
   const [model, setModel] = useState("");
-  const [year, setYear] = useState("");
   const [kilometer, setKilometer] = useState("");
   const [varient, setVarient] = useState("");
   const [owner, setOwner] = useState("First");
@@ -25,16 +24,32 @@ function AddCar({ onBack }) {
   const [additional_images, setAdditionalImages] = useState([]);
   const [sold, setSold] = useState(false);
   const [price, setPrice] = useState(0);
-  const [color, setColor] = useState("Unavailable");
   const [under_warrenty, setUnderWarrenty] = useState(false);
   const [fuelType, setFuelType] = useState("Unavailable");
-  const [location, setLocation] = useState("");
+  const [place, setPlace] = useState("");
   const [transmission_type, setTransmissionType] = useState("Manual");
-  const [registration, setRegistration] = useState("");
   const [insurance, setInsurance] = useState("");
-  const [rto, setRto] = useState("Unavailable");
   const [engine, setEngine] = useState("Unavailable");
   const [selectedMainImage, setSelectedMainImage] = useState("");
+  const [category, setCategory] = useState("");
+  const [dealers, setDealers] = useState([]);
+
+  useEffect(() => {
+    const fetchDealers = async () => {
+      setLoading(true);
+      try {
+        let res = await axios.get(`${BACKEND_URL}/all-dealers`);
+        if (res && res.data) {
+          setDealers(res.data.data);
+          setDealer(dealers?.length > 0 ? dealers[0]._id : "");
+        }
+      } catch (error) {
+        console.log("Error:", error);
+      }
+      setLoading(false);
+    };
+    fetchDealers();
+  }, []);
 
   const uploadImage = async (base64EncodedImage) => {
     setSelectedMainImage(base64EncodedImage);
@@ -86,7 +101,6 @@ function AddCar({ onBack }) {
       car_name,
       brand,
       model,
-      year,
       kilometer,
       varient,
       owner,
@@ -100,15 +114,13 @@ function AddCar({ onBack }) {
       additional_images, // Additional images as base64 encoded strings
       sold,
       price,
-      color,
       under_warrenty,
       fuelType,
-      location,
+      place,
       transmission_type,
-      registration,
       insurance,
-      rto,
       engine,
+      category,
     };
 
     try {
@@ -119,6 +131,32 @@ function AddCar({ onBack }) {
           text: "New car added!",
           icon: "success",
         });
+        window.location.reload();
+        setCarName("");
+        setBrand("");
+        setModel("");
+        setKilometer("");
+        setVarient("");
+        setOwner("First");
+        setClaim(false);
+        setMajorAccident(false);
+        setShopName("");
+        setLoanAvailable(true);
+        setDealer("");
+        setAbout("");
+        setImage("");
+        setAdditionalImages([]);
+        setSold(false);
+        setPrice(0);
+        setUnderWarrenty(false);
+        setFuelType("Unavailable");
+        setPlace("");
+        setTransmissionType("Manual");
+        setInsurance("");
+        setEngine("Unavailable");
+        setSelectedMainImage("");
+        setCategory("");
+        setDealers([]);
       }
     } catch (error) {
       console.error("Error while adding car: ", error);
@@ -127,7 +165,7 @@ function AddCar({ onBack }) {
         text: `Failed to add car ${error}`,
         icon: "error",
       });
-      window.location.reload();
+      // window.location.reload();
     } finally {
       setLoading(false);
     }
@@ -168,7 +206,7 @@ function AddCar({ onBack }) {
                   onChange={(e) => setBrand(e.target.value)}
                 />
               </div>
-              <div className="col-md-6">
+              {/* <div className="col-md-6">
                 <label>Model</label>
                 <input
                   type="text"
@@ -177,15 +215,15 @@ function AddCar({ onBack }) {
                   value={model}
                   onChange={(e) => setModel(e.target.value)}
                 />
-              </div>
+              </div> */}
               <div className="col-md-6">
-                <label>Year</label>
+                <label>Model</label>
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Enter year"
-                  value={year}
-                  onChange={(e) => setYear(e.target.value)}
+                  placeholder="Enter modal"
+                  value={model}
+                  onChange={(e) => setModel(e.target.value)}
                 />
               </div>
               <div className="col-md-6">
@@ -207,6 +245,19 @@ function AddCar({ onBack }) {
                   value={varient}
                   onChange={(e) => setVarient(e.target.value)}
                 />
+              </div>
+              <div className="col-md-6">
+                <label>Category</label>
+                <select
+                  className="form-control"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                >
+                  <option value="all">Choose category</option>
+                  <option value={"sadan"}>Sedan</option>
+                  <option value={"hatchback"}>Hatchback</option>
+                  <option value={"suv"}>Suv</option>
+                </select>
               </div>
               <div className="col-md-6">
                 <label>Owner Document</label>
@@ -267,10 +318,11 @@ function AddCar({ onBack }) {
                   className="form-control"
                   value={dealer}
                   onChange={(e) => setDealer(e.target.value)}
+                  defaultValue={dealers.length > 0 ? dealers[0]._id : ""}
                 >
-                  <option value="">Select Dealer</option>
-                  <option value="Dealer 1">Dealer 1</option>
-                  <option value="Dealer 2">Dealer 2</option>
+                  {dealers.map((d) => (
+                    <option value={d?._id}>{d?.name}</option>
+                  ))}
                 </select>
               </div>
               <div className="col-md-6">
@@ -361,16 +413,6 @@ function AddCar({ onBack }) {
                 />
               </div>
               <div className="col-md-6">
-                <label>Color</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Enter color"
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                />
-              </div>
-              <div className="col-md-6">
                 <label>Under Warranty</label>
                 <select
                   className="form-control"
@@ -397,8 +439,8 @@ function AddCar({ onBack }) {
                   type="text"
                   className="form-control"
                   placeholder="Enter location"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
+                  value={place}
+                  onChange={(e) => setPlace(e.target.value)}
                 />
               </div>
               <div className="col-md-6">
@@ -412,34 +454,15 @@ function AddCar({ onBack }) {
                   <option value="Automatic">Automatic</option>
                 </select>
               </div>
+
               <div className="col-md-6">
-                <label>Registration</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Enter registration"
-                  value={registration}
-                  onChange={(e) => setRegistration(e.target.value)}
-                />
-              </div>
-              <div className="col-md-6">
-                <label>Insurance</label>
+                <label>Insurance Till</label>
                 <input
                   type="text"
                   className="form-control"
                   placeholder="Enter insurance details"
                   value={insurance}
                   onChange={(e) => setInsurance(e.target.value)}
-                />
-              </div>
-              <div className="col-md-6">
-                <label>RTO</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Enter RTO details"
-                  value={rto}
-                  onChange={(e) => setRto(e.target.value)}
                 />
               </div>
               <div className="col-md-6">
